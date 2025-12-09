@@ -1,0 +1,48 @@
+# ==============
+# LOGS
+# ==============
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==============
+# NODE MODULES
+# ==============
+node_modules/
+umkm-backend/node_modules/
+
+# ==============
+# BUILD OUTPUT
+# ==============
+dist
+dist-ssr
+*.local
+
+# Kalau nanti ada build khusus, tambahkan di sini
+# vercel/
+# .output/
+
+# ==============
+# ENV FILES (SANGAT PENTING)
+# ==============
+.env
+.env.*
+umkm-backend/.env
+
+# ==============
+# EDITOR / SYSTEM FILES
+# ==============
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
