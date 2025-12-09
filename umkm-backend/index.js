@@ -14,16 +14,28 @@ app.use(express.json());
 // ===========================
 
 // MIDTRANS_ENV bisa: "sandbox" atau "production"
+// Gunakan env MIDTRANS_ENV untuk menentukan mode. Jika tidak di-set, asumsi sandbox.
 const isProduction = process.env.MIDTRANS_ENV === "production";
 
-// Pilih serverKey berdasarkan mode
-const serverKey = isProduction
-  ? process.env.MIDTRANS_SERVER_KEY_PRODUCTION
-  : process.env.MIDTRANS_SERVER_KEY_SANDBOX;
+/*
+ * Pilih serverKey berdasarkan mode. Kami mendukung beberapa nama ENV untuk
+ * mempermudah konfigurasi di Railway atau .env lokal:
+ * - MIDTRANS_SERVER_KEY_PRODUCTION dan MIDTRANS_SERVER_KEY_SANDBOX adalah nama resmi.
+ * - MIDTRANS_SERVER_KEY bisa dipakai sebagai fallback umum untuk kedua mode.
+ */
+let serverKey;
+if (isProduction) {
+  serverKey =
+    process.env.MIDTRANS_SERVER_KEY_PRODUCTION || process.env.MIDTRANS_SERVER_KEY;
+} else {
+  serverKey =
+    process.env.MIDTRANS_SERVER_KEY_SANDBOX || process.env.MIDTRANS_SERVER_KEY;
+}
 
 if (!serverKey) {
   console.warn(
-    "[Midtrans] WARNING: Server key belum di-set. Cek env MIDTRANS_SERVER_KEY_SANDBOX / MIDTRANS_SERVER_KEY_PRODUCTION"
+    "[Midtrans] WARNING: Server key belum di-set. Pastikan salah satu ENV berikut diisi: " +
+      "MIDTRANS_SERVER_KEY_SANDBOX, MIDTRANS_SERVER_KEY_PRODUCTION, atau MIDTRANS_SERVER_KEY"
   );
 }
 
