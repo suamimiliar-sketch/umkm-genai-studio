@@ -1,56 +1,65 @@
+// services/paymentService.ts
+// This service handles communication with the payment backend (Midtrans Snap).
+// It requests a Snap token from your backend and returns it to the caller.
+// If no backend URL is configured via VITE_BACKEND_URL, a mock token will be
+// returned in development mode so that the UI can still function without payment.
 
-export interface PaymentDetails {
+export interface PaymentPayload {
   productName: string;
   amount: number;
 }
 
-// In a real application, this would call your backend to create a transaction 
-// and get a Snap Token from Midtrans.
 /**
- * Retrieve a Midtrans Snap token for a given transaction.
+ * Fetch a Snap payment token from the backend. The backend is expected to
+ * expose a POST /create-transaction endpoint that accepts a JSON body with
+ * `productName` and `amount` fields and returns an object with a `token` field.
  *
- * If a backend URL is provided via the `VITE_BACKEND_URL` environment variable,
- * this function will attempt to create a real transaction by sending a POST
- * request to `${VITE_BACKEND_URL}/create-transaction` with the payment details.
- * The backend is expected to respond with a JSON payload containing a `token`
- * property.  The returned token can then be passed directly to `window.snap.pay`.
- *
- * When no backend URL is configured, or if the request fails, a mock token
- * (`"MOCK_TOKEN_DEMO"`) is returned.  The app treats this token as a simulation
- * and uses a confirmation dialog to emulate payment.
+ * In development (`import.meta.env.MODE !== 'production'`), if the backend URL
+ * is missing or the request fails, this function returns a mock token so the
+ * payment flow can be simulated locally. In production, any error will be
+ * propagated to the caller so it can be displayed to the user.
  */
-export const getSnapToken = async (details: PaymentDetails): Promise<string> => {
-  console.log("Initiating payment for:", details);
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+export async function getSnapToken({ productName, amount }: PaymentPayload): Promise<string> {
+  const baseUrl: string | undefined = (import.meta as any).env.VITE_BACKEND_URL;
+  const isProduction: boolean = (import.meta as any).env.MODE === 'production';
 
-  // If no backend URL is set, fall back to simulation mode
-  if (!backendUrl) {
-    console.warn(
-      "VITE_BACKEND_URL is not defined. Falling back to mock token for payment simulation."
-    );
-    return "MOCK_TOKEN_DEMO";
+  // If no backend URL is provided, fall back to mock token in dev
+  if (!baseUrl) {
+    if (isProduction) {
+      throw new Error('Backend URL is not configured');
+    }
+    console.warn('[paymentService] VITE_BACKEND_URL not set, returning mock token');
+    return 'MOCK_TOKEN_DEMO';
   }
 
   try {
-    const response = await fetch(`${backendUrl}/create-transaction`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(details),
+    const response = await fetch(`${baseUrl.replace(/\/$/, '')}/create-transaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productName, amount }),
     });
+
     if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(errorText || `Backend responded with status ${response.status}`);
     }
-    const data = await response.json();
-    if (data && typeof data.token === "string" && data.token.length > 0) {
+
+    // The backend should return JSON with a `token` property.
+    const data: any = await response.json();
+    if (data && typeof data.token === 'string') {
       return data.token;
     }
-    throw new Error("Invalid token response from backend");
-  } catch (err) {
-    console.error("Error fetching Snap token:", err);
-    // As a safety net, return the mock token if the real call fails.  The frontend
-    // will then fall back to simulation mode.
-    return "MOCK_TOKEN_DEMO";
+    // Some backends might return the token directly as a string
+    if (typeof data === 'string') {
+      return data;
+    }
+    throw new Error('Invalid response from payment backend');
+  } catch (err: any) {
+    console.error('[paymentService] Failed to fetch Snap token:', err);
+    if (!isProduction) {
+      // In development, simulate the payment flow with a mock token
+      return 'MOCK_TOKEN_DEMO';
+    }
+    throw err;
   }
-};
+}
