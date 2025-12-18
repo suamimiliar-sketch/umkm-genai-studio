@@ -199,7 +199,10 @@ The poster should include these text elements (all in Bahasa Indonesia):
 5. **CTA BUTTON (BOTTOM)**
    - Call-to-action in button/badge form
    - **CRITICAL: CTA TEXT MUST ALWAYS BE IN UPPERCASE/CAPSLOCK**
-   - Indonesian text: "BELI SEKARANG", "PESAN SEKARANG", "ORDER SEKARANG"
+   - **USE SHORT CTA TEXT (max 2 words, max 10 characters total) to avoid typos:**
+     - Preferred: "BELI", "PESAN", "ORDER", "SHOP NOW", "BUY NOW"
+     - Acceptable: "ORDER NOW", "BELI KINI", "PESAN KINI"
+     - AVOID LONG WORDS like "SEKARANG" (8 letters - causes AI typos)
    - Style: Rounded rectangle or pill shape
    - Color: Contrasting, eye-catching
    - Position: Bottom center, approximately 75-85% from top
@@ -249,6 +252,36 @@ From TOP to BOTTOM (COMPACT, BALANCED layout):
 3. CENTER ZONE (35-50% of poster): PRODUCT IMAGE - hero placement
 4. LOWER-MID ZONE (close to product): PROMO badge and PRICE display
 5. BOTTOM ZONE (75-85% from top): CTA Button ("BELI SEKARANG" - UPPERCASE) + Tagline directly below
+
+===================================
+TEXT RENDERING GUIDELINES
+===================================
+
+**AI image generation has limitations with text. Follow these rules to minimize typos:**
+
+1. **KEEP TEXT SHORT:**
+   - Title: Max 3 words, max 20 characters
+   - CTA: Max 2 words, max 10 characters
+   - Feature badges: Max 2 words each
+
+2. **AVOID LONG INDONESIAN WORDS:**
+   - BAD: "SEKARANG" (8 letters - causes typos)
+   - GOOD: "KINI" (4 letters)
+   - BAD: "DAPATKAN" (8 letters)
+   - GOOD: "DAPAT" or "GET" (4-3 letters)
+
+3. **PREFERRED SHORT CTA OPTIONS:**
+   - "BELI" (4 letters)
+   - "PESAN" (5 letters)
+   - "ORDER" (5 letters)
+   - "ORDER NOW" (8 letters, 2 common English words)
+   - "BUY NOW" (6 letters)
+   - "SHOP NOW" (7 letters)
+   - "BELI KINI" (8 letters)
+
+4. **FOR TITLES:**
+   - Keep product names short
+   - If product name is long, abbreviate or use key word only
 
 ===================================
 NO 2D/VECTOR ORNAMENTS
@@ -388,7 +421,8 @@ export const generateMarketingContent = async (
     
     IMPORTANT REMINDERS:
     - TITLE must be in UPPERCASE/CAPSLOCK (e.g., "Juara Dimsum" → "JUARA DIMSUM")
-    - CTA must be in UPPERCASE/CAPSLOCK (e.g., "BELI SEKARANG", "PESAN SEKARANG")
+    - CTA must be in UPPERCASE/CAPSLOCK and SHORT (max 10 chars): "BELI", "PESAN", "ORDER", "ORDER NOW", "BUY NOW", "BELI KINI"
+    - AVOID long CTA words like "SEKARANG" (causes AI text rendering errors/typos)
     - All text on the poster MUST be in Bahasa Indonesia
     - Title should have ELEGANT 3D effect (subtle shadow, gradient) - NOT thick chunky borders
     - BALANCED SPACING: Keep title, product, and CTA close together - no big gaps
