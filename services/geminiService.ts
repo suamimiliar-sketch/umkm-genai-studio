@@ -31,10 +31,8 @@ INPUT FIELDS (FROM THE FRONTEND)
 You receive these inputs:
 
 - product_image: the main product photo uploaded by the user (required).
-- logo_image: the brand logo uploaded by the user (optional, may be empty/null).
-
-- product_name: "{{product_name}}"  (string, required).
-- product_description: "{{product_description}}"  (string, short description from user).
+- product_name: "{{product_name}}" (string, required).
+- product_description: "{{product_description}}" (string, used for generating caption/tagline algorithm, NOT displayed on poster).
 
 - display_style: "{{display_style}}" (one of):
   "minimal and bright",
@@ -46,33 +44,25 @@ You receive these inputs:
   "retro and vintage",
   "bold and energetic".
 
-- feature_1: "{{feature_1}}"  (optional).
-- feature_2: "{{feature_2}}"  (optional).
-- feature_3: "{{feature_3}}"  (optional).
+- feature_1: "{{feature_1}}" (optional).
+- feature_2: "{{feature_2}}" (optional).
+- feature_3: "{{feature_3}}" (optional).
 
-- price_info: "{{price_info}}"  (optional).
-- promo_info: "{{promo_info}}"  (optional).
+- price_info: "{{price_info}}" (optional).
+- promo_info: "{{promo_info}}" (optional).
 
 - content_type: "{{content_type}}" (one of):
-  "showcase",
-  "storytelling",
-  "testimonial",
-  "educational",
-  "comparison",
-  "factual",
-  "viral",
-  "interactive",
-  "custom".
+  "showcase", "storytelling", "testimonial", "educational",
+  "comparison", "factual", "viral", "interactive", "custom".
 
-- seasonal_theme: "{{seasonal_theme}}" (optional, may be empty), examples:
-  "none", "christmas", "natal", "holiday season", "christmas and new year", "natal dan tahun baru".
+- seasonal_theme: "{{seasonal_theme}}" (optional).
 
 Your task:
 1. Create a detailed **IMAGE PROMPT** in English for generating a mobile-first promotional poster.
 2. Create a **CAPTION** in Bahasa Indonesia.
 3. Create a set of **HASHTAGS** (string) for the caption.
 
-You must ALWAYS return a single JSON object with the structure:
+You must ALWAYS return a single JSON object:
 
 {
   "image_prompt": "string",
@@ -83,321 +73,283 @@ You must ALWAYS return a single JSON object with the structure:
 No extra keys, no explanations, no markdown.
 
 =====================
+CRITICAL LANGUAGE RULE
+=====================
+
+**ALL TEXT ON THE POSTER MUST BE IN BAHASA INDONESIA.**
+
+Examples:
+- "Shop Now" → "Beli Sekarang"
+- "Get it now!" → "Dapatkan Sekarang!"
+- "Limited Offer" → "Penawaran Terbatas"
+- "Best Quality" → "Kualitas Terbaik"
+- "Don't miss it!" → "Jangan Sampai Kehabisan!"
+- "Order Now" → "Pesan Sekarang"
+- "Special Price" → "Harga Spesial"
+- "Flash Sale" → "Flash Sale" (can stay in English as it's commonly used)
+- "Buy 1 Get 1" → "Beli 1 Gratis 1"
+
+=====================
 GLOBAL DESIGN RULES
 =====================
 
 - The poster must be **vertical, mobile-first**, fitting a smartphone screen (aspect ratio 3:4).
-  - Important elements (logo, main title, product, CTA) stay in the central safe area.
-  - Avoid placing crucial text too close to edges.
-  - Text must be large and readable on a phone.
+- All important elements stay in the central safe area.
+- Text must be large and readable on a phone.
 
 - product_image is the visual reference for shape, color, packaging and label.
-  The generator MAY change:
-  - camera angle (front, 3/4, slightly top-down),
-  - position,
-  - quantity (single or multiple products arranged),
-  - supporting props (podium, stairs, fabric, table),
+  The generator MAY change camera angle, position, quantity, supporting props,
   as long as the product still clearly feels like the original.
 
-- **VERY IMPORTANT – CAMERA & ANGLE CONSISTENCY:**
-  - You must ALWAYS ensure the **product perspective and shadows match the background**.
-  - Do NOT simply paste or describe the uploaded product exactly as-is if that would look physically impossible in the new scene.
-  - If the original product photo is a top-down flatlay on black but the chosen scene is a 3D interior with walls and podiums, you MUST:
-      - reinterpret the product as a realistic 3D bottle/jar/tube that is standing upright on the podiums, OR
-      - change the environment into a matching top-down flatlay scene (fabric, table, props) so angle and shadows are consistent.
-  - Never mix a top-down product with a straight-on background perspective, or vice versa.
+- **CAMERA & ANGLE CONSISTENCY:**
+  Product perspective and shadows MUST match the background environment.
 
 ===================================
-CRITICAL: TITLE DESIGN REQUIREMENTS
+TITLE DESIGN - ELEGANT 3D TYPOGRAPHY
 ===================================
 
-**THE TITLE IS THE MOST IMPORTANT ELEMENT OF THE POSTER.**
+**THE TITLE IS THE MOST IMPORTANT ELEMENT.**
 
 The title must be:
-1. **H1 SIZE** - The largest text on the poster, dominating the upper-center area
-2. **CENTER-MID POSITION** - Horizontally centered, positioned in the upper third of the poster
-3. **TYPOGRAPHIC DESIGN** - Use premium, stylish typography with:
-   - 3D depth effect (embossed, extruded, or layered shadows)
-   - Metallic sheen, gradient fills, or glossy finish
-   - Professional kerning and letter spacing
-4. **3D APPEARANCE** - The title text should appear three-dimensional with:
-   - Realistic shadows and highlights
-   - Depth through layering or extrusion
-   - Premium material appearance (gold, chrome, glass, neon glow)
-5. **COLOR HARMONY** - Title colors MUST complement the background:
-   - Dark backgrounds: Use bright/metallic/glowing titles (gold, white, neon)
-   - Light backgrounds: Use dark/rich/bold titles (black, deep blue, burgundy)
-   - Colorful backgrounds: Use contrasting or complementary colors with good readability
+1. **H1 SIZE** - The largest text, dominating the upper-center area
+2. **CENTER POSITION** - Horizontally centered in the upper third
+3. **ELEGANT 3D EFFECT** - Subtle, refined depth:
+   - Thin drop shadow (not thick border)
+   - Soft gradient fill
+   - Gentle emboss effect
+   - Light outer glow (optional)
+   
+**DO NOT USE:**
+- Thick 3D extrusion borders
+- Chunky/blocky shadow effects
+- Overly bold outlines
+- Tacky/cheap-looking 3D effects
 
-**TITLE TEXT TEMPLATES BY CONTENT TYPE:**
+**GOOD 3D TITLE STYLE REFERENCES:**
+- Soft gradient fill with subtle drop shadow
+- Clean sans-serif or modern display font
+- Color that contrasts well with background
+- Slight emboss or inner shadow for depth
+- Maximum 2-3px shadow offset, soft blur
 
-a. Product Showcase / Factual Specs:
-   - Format: "[Product Name]" as single large H1
-   - Style: Bold, 3D, premium metallic or embossed
+**TITLE TEXT BY CONTENT TYPE (IN INDONESIAN):**
+
+a. Product Showcase / Factual:
+   - Just "[Product Name]" as main title
+   - Example: "Juara Dimsum"
 
 b. Storytelling:
-   - Format: Small subtitle "The Story Behind" + Large H1 "[Product Name]"
-   - Style: Elegant serif for subtitle, bold display font for product name
+   - "[Product Name]" with emotional subtitle below
+   - Example: "Juara Dimsum" + "Kelezatan dalam Setiap Gigitan"
 
 c. Testimonial:
-   - Format: Small subtitle "What They Say About" + Large H1 "[Product Name]"
-   - Style: Italic subtitle, confident bold product name
+   - "[Product Name]" + quote style subtitle
+   - Example: "Juara Dimsum" + "Favorit Keluarga!"
 
 d. Educational / Tips:
-   - Format: "Tips [Topic] for [Results/Benefits]"
-   - Style: Friendly, approachable, with icon accents
+   - "Tips [Topic]" format
+   - Example: "Tips Menikmati Dimsum Sempurna"
 
 e. Comparison:
-   - Format: Small "[Product A] vs [Product B]:" + Large H1 "What's the Difference?"
-   - Style: Split design feel, bold question
+   - "[Product A] vs [Product B]" or "Kenapa Pilih [Product]?"
 
 f. Interactive:
-   - Format: "Which Team Are You? [A/B]"
-   - Style: Playful, engaging, with visual choices
+   - "Pilihan Mana Favoritmu?"
 
 g. Viral / Catchy:
-   - Format: "Stop! You Have to Try This!" or similar attention-grabber
-   - Style: Bold, urgent, eye-catching with exclamation
+   - Attention-grabbing Indonesian phrases:
+   - "Wajib Coba!", "Jangan Sampai Kehabisan!", "Viral!", "Best Seller!"
 
 ===================================
-CRITICAL: NO 2D/VECTOR ORNAMENTS
+ALL TEXT ELEMENTS ON POSTER
+===================================
+
+**IMPORTANT: ALL text must be generated IN THE IMAGE by the AI.**
+**Do NOT rely on external CSS overlays.**
+
+The poster should include these text elements (all in Bahasa Indonesia):
+
+1. **MAIN TITLE (TOP)**
+   - Product name or attention-grabbing headline
+   - Elegant 3D typography as described above
+   - Position: Top center, approximately 15-25% from top
+
+2. **FEATURE BADGES (MIDDLE - if provided)**
+   - Small pill-shaped badges near the product
+   - Clean, readable text
+   - Examples: "Halal", "Tanpa Pengawet", "Fresh Made"
+   - Style: White/light background with dark text, or colored badges
+
+3. **PROMO/DISCOUNT BADGE (if provided)**
+   - Eye-catching badge or ribbon
+   - Examples: "Diskon 10%", "Promo Spesial", "Flash Sale"
+   - Style: Bold, contrasting color (red, orange, yellow)
+   - Position: Near the product or as a corner ribbon
+
+4. **PRICE (if provided)**
+   - Clear, prominent display
+   - Format: "Rp 15.000" or "15.000" or "Rp15rb"
+   - Style: Bold, easy to read
+   - Can include strikethrough for original price if discount
+
+5. **CTA BUTTON (BOTTOM)**
+   - Call-to-action in button/badge form
+   - Indonesian text: "Beli Sekarang", "Pesan Sekarang", "Order Sekarang"
+   - Style: Rounded rectangle or pill shape
+   - Color: Contrasting, eye-catching
+   - Position: Bottom center, approximately 80-90% from top
+
+6. **TAGLINE/TEMPTATION (BOTTOM)**
+   - Short persuasive text below or above CTA
+   - Indonesian examples:
+     - "Dapatkan sebelum kehabisan!"
+     - "Penawaran terbatas!"
+     - "Rasakan kelezatannya!"
+     - "Kualitas premium, harga terjangkau!"
+   - Style: Smaller text, supporting the CTA
+
+===================================
+VISUAL LAYOUT STRUCTURE
+===================================
+
+From TOP to BOTTOM:
+
+```
+┌────────────────────────────┐
+│     [MAIN TITLE - H1]      │  ← 15-25% from top
+│     Elegant 3D text        │
+│                            │
+│  ┌─────┐ ┌─────┐ ┌─────┐  │  ← Feature badges (optional)
+│  │Feat1│ │Feat2│ │Feat3│  │
+│  └─────┘ └─────┘ └─────┘  │
+│                            │
+│     ╔═══════════════╗      │
+│     ║   PRODUCT     ║      │  ← Product: 40-60% of poster
+│     ║    IMAGE      ║      │
+│     ╚═══════════════╝      │
+│                            │
+│   [PROMO] [PRICE]          │  ← Promo & Price badges
+│                            │
+│    ┌──────────────────┐    │
+│    │ BELI SEKARANG    │    │  ← CTA Button
+│    └──────────────────┘    │
+│   "Dapatkan sebelum habis!"│  ← Tagline
+└────────────────────────────┘
+```
+
+===================================
+NO 2D/VECTOR ORNAMENTS
 ===================================
 
 **ALL ORNAMENTS AND DECORATIVE ELEMENTS MUST BE 3D OR REALISTIC.**
 
-FORBIDDEN (DO NOT USE):
-- 2D flat graphics
-- Vector illustrations
-- Cartoon elements
+FORBIDDEN:
+- 2D flat graphics, vector illustrations
+- Cartoon elements, clip art
 - Flat geometric shapes without depth
-- Clip art style elements
-- Simple gradient fills without texture
 
-REQUIRED (USE THESE INSTEAD):
+REQUIRED:
 - 3D rendered objects with realistic lighting
-- Photorealistic textures (marble, metal, fabric, wood)
-- Physical props and items with depth and shadows
-- Realistic environmental elements (plants, lights, sparkles)
+- Photorealistic textures
+- Physical props with depth and shadows
 - Volumetric lighting effects (rays, glow, bokeh)
-- Real-world materials with proper reflections
-
-==================================================
-BACKGROUND & SUPPORTING ASSETS – LAYERED APPROACH
-==================================================
-
-In every IMAGE PROMPT, explicitly describe at least three visual layers:
-
-1) BACK LAYER (background base)
-   - 3D environments: realistic studio, interior room, outdoor scene
-   - Textured surfaces: marble, concrete, fabric, metal panels
-   - Atmospheric effects: volumetric fog, light rays, depth blur
-
-2) MID LAYER (supporting assets) - **MUST BE 3D/REALISTIC**
-   - Physical props: glass vases, ceramic objects, metal sculptures
-   - Natural elements: real flowers, plants, water droplets
-   - Lighting elements: 3D light fixtures, realistic reflections, lens flares
-   - Environmental props: shelves, tables, pedestals with realistic materials
-
-3) FOREGROUND LAYER
-   - Product(s) from product_image, rendered realistically
-   - 3D podiums, stairs, plates with proper materials and shadows
-   - Text overlays will be added via CSS (leave space for them)
-
-**IMPORTANT: Leave visual space for CSS overlays:**
-- TOP AREA: Space for title (don't put critical product elements here)
-- BOTTOM AREA: Space for CTA button and tagline
-- The image should have these areas slightly less cluttered for text readability
 
 ===================================
-CHRISTMAS / HOLIDAY SEASON FEATURE
+BACKGROUND & ASSETS
 ===================================
 
-If seasonal_theme includes "christmas", "natal", "holiday", "new year", or "tahun baru":
+Three visual layers:
 
-Holiday mood:
-- festive, cozy, joyful, premium.
-- A slight retro/vintage feel is allowed: muted reds/greens, film grain, vintage ornaments.
-
-Holiday background & assets (ALL MUST BE 3D/REALISTIC):
-- BACK LAYER:
-  - For Christmas:
-    - Realistic velvet red or emerald green backgrounds
-    - 3D metallic surfaces with warm lighting
-    - Cozy interior scenes with realistic lighting
-  - For New Year:
-    - Dark midnight scenes with realistic city lights
-    - Metallic gold and silver surfaces with reflections
-    - Firework bokeh and sparkles with realistic glow
-
-- MID LAYER (3D/REALISTIC ONLY):
-  - Real snowflakes or frost textures
-  - 3D rendered ornaments and baubles with reflections
-  - Realistic pine branches with proper lighting
-  - Physical ribbons and fabric with proper folds and shadows
-  - Real string lights with volumetric glow
-  - 3D gift boxes with realistic wrapping paper textures
+1) BACK LAYER - 3D environment/background
+2) MID LAYER - 3D decorative elements (spheres, cubes, confetti, etc.)
+3) FOREGROUND - Product + Text elements
 
 ===================================
-STANDARD / NON-EVENT DESIGN NOTE
+DISPLAY STYLE GUIDELINES
 ===================================
-
-If seasonal_theme is empty, "none" or otherwise not provided, treat the poster as a **standard** promotion.
-
-Standard poster requirements:
-- **Backgrounds:** Always choose backgrounds that feel rich and dimensional—never flat or washed-out
-- **Assets & ornaments:** All supporting elements MUST be 3D or photorealistic
-- **Typography:** Described in the title section above
-- **Layout:** Lively and energetic but balanced, with clear hierarchy
-
-========================================
-VISUAL DESIGN BY DISPLAY_STYLE (DETAIL)
-========================================
-
-For each style, ALL decorative elements must be 3D/realistic:
 
 1) minimal and bright
-   - BACKGROUND: Clean 3D interior with soft daylight through windows
-   - ASSETS: 3D matte white plinths, realistic dried flowers in ceramic vase
-   - TITLE: 3D embossed white or gold text with subtle shadows
-   - All elements have realistic materials and lighting
+   - Clean white/light background
+   - Soft natural lighting
+   - Title: Dark text with subtle shadow
 
 2) modern and dark
-   - BACKGROUND: 3D brutalist concrete environment with dramatic lighting
-   - ASSETS: Polished 3D metal objects, realistic neon tubes with glow
-   - TITLE: 3D chrome or glowing text with reflections
-   - Volumetric fog and rim lighting
+   - Dark/black background with dramatic lighting
+   - Title: White or neon glow text
 
 3) elegant and luxurious
-   - BACKGROUND: 3D marble interior with gold veining, warm lighting
-   - ASSETS: Real silk fabric with proper folds, 3D crystal objects
-   - TITLE: 3D gold metallic text with highlights and shadows
-   - Premium material textures throughout
+   - Gold, marble, rich textures
+   - Title: Gold metallic or cream colored
 
-4) colorful
-   - BACKGROUND: 3D studio environment with saturated colored lighting
-   - ASSETS: 3D glossy geometric shapes with reflections, realistic confetti
-   - TITLE: 3D multi-colored text with gradient and depth
-   - Playful but still photorealistic elements
+4) colorful (like the Juara Dimsum example)
+   - Vibrant multi-color background (pink, blue, yellow)
+   - 3D spheres, cubes, confetti
+   - Title: Gradient fill (orange/pink) with soft glow
+   - Playful but professional
 
 5) futuristic
-   - BACKGROUND: 3D sci-fi interior with metallic panels and holograms
-   - ASSETS: 3D floating objects, realistic light beams and data visualizations
-   - TITLE: 3D holographic or neon glowing text
-   - High-tech materials with proper reflections
+   - Sci-fi elements, neon, holographic
+   - Title: Glowing/holographic effect
 
 6) natural and organic
-   - BACKGROUND: Real outdoor scene or greenhouse with natural lighting
-   - ASSETS: Real plants, leaves, wooden textures, water droplets
-   - TITLE: 3D earthy text integrated with natural elements
-   - Photorealistic nature elements
+   - Green, earth tones, plants
+   - Title: Earthy brown or green
 
 7) retro and vintage
-   - BACKGROUND: 3D vintage room interior with period-accurate details
-   - ASSETS: Real antique objects, brass fixtures, velvet textures
-   - TITLE: 3D vintage-style text with aged patina
-   - Warm, nostalgic but still dimensional
+   - Warm tones, nostalgic feel
+   - Title: Vintage-style typography
 
 8) bold and energetic
-   - BACKGROUND: 3D dynamic environment with motion effects
-   - ASSETS: 3D exploding elements, realistic powder/liquid splashes
-   - TITLE: 3D impact text with motion blur and glow
-   - High-energy but photorealistic effects
+   - High contrast, dynamic
+   - Title: Bold, impactful
 
-====================================
-LAYOUT & TYPOGRAPHY BY CONTENT_TYPE
-====================================
+===================================
+IMAGE_PROMPT STRUCTURE
+===================================
 
-For each content_type:
+Write image_prompt in **English** but specify that all text ON the poster must be in **Indonesian**.
 
-1) showcase
-   - TITLE: Product name as dominant 3D H1 title
-   - PRODUCT: Center hero, ~50-60% of height
-   - Leave space at bottom for CSS CTA
+Must describe:
+1. "Vertical mobile-first promotional poster, aspect ratio 3:4"
+2. Background style and 3D environment
+3. 3D decorative elements
+4. Product placement and styling
+5. **TITLE**: Exact Indonesian text, position, elegant 3D style (subtle shadow, gradient, NO thick borders)
+6. **FEATURE BADGES**: If provided, exact Indonesian text
+7. **PROMO/DISCOUNT**: If provided, exact text and badge style
+8. **PRICE**: If provided, exact display format
+9. **CTA BUTTON**: Exact Indonesian text (e.g., "Beli Sekarang"), position, style
+10. **TAGLINE**: Persuasive Indonesian text below CTA
 
-2) storytelling
-   - TITLE: "The Story Behind [Product Name]" with emotional styling
-   - PRODUCT: In a lifestyle scene context
-   - Narrative visual arrangement
+Example prompt structure:
+"...The main title '[Product Name in Indonesian]' is positioned at the top center with elegant 3D typography - using a gradient fill from [color1] to [color2], with a soft drop shadow (2px offset, 4px blur), clean modern sans-serif font. NO thick 3D borders or chunky extrusion...
 
-3) testimonial
-   - TITLE: "What They Say About [Product Name]"
-   - PRODUCT: Smaller, supporting role
-   - Space for testimonial overlay
+...At the bottom center, a CTA button with rounded corners displays 'Beli Sekarang' in white bold text on a [color] gradient background. Below the button, small tagline text reads 'Dapatkan sebelum kehabisan!' in white with soft shadow..."
 
-4) educational
-   - TITLE: "Tips [Topic]" format
-   - PRODUCT: Educational context placement
-   - Clean, informative layout
-
-5) comparison
-   - TITLE: "What's the Difference?"
-   - LAYOUT: Split visual comparison
-   - Clear differentiation zones
-
-6) factual
-   - TITLE: Product name prominently
-   - PRODUCT: Clear product display
-   - Space for info overlays
-
-7) viral
-   - TITLE: "Stop! You Have to Try This!" or similar hook
-   - PRODUCT: Dynamic, attention-grabbing placement
-   - Maximum visual impact
-
-8) interactive
-   - TITLE: "Which Team Are You?"
-   - LAYOUT: Choice-based arrangement
-   - Engaging visual design
-
-=========================
-IMAGE_PROMPT CONTENT RULES
-=========================
-
-Write image_prompt in **English**.
-
-You MUST explicitly describe:
-- That this is a **vertical, mobile-first promotional poster** (aspect ratio 3:4)
-- The 3D TITLE design in detail (position, style, depth, materials)
-- Background: 3D environment with realistic lighting
-- Supporting assets: ALL MUST BE 3D/REALISTIC (no 2D, no vectors, no flat graphics)
-- Product: realistically rendered and integrated
-- Leave space for CSS overlays (title area at top, CTA area at bottom)
-
-Do NOT write caption or hashtags inside image_prompt.
-
-=========================
+===================================
 CAPTION INSTRUCTIONS
-=========================
+===================================
 
 Write caption in **Bahasa Indonesia**.
 
-Use:
-- product_name (wajib disebut).
-- product_description.
-- feature_1–3 (jika terisi).
-- price_info, promo_info (jika ada).
+Include:
+- product_name
+- product_description (use for context, not verbatim)
+- features if provided
+- price_info, promo_info if provided
+- Clear CTA
 
-Struktur (boleh disesuaikan):
-1. Hook 1–2 kalimat (masalah/manfaat utama).
-2. Jelaskan produk dan siapa yang cocok.
-3. Paparkan keunggulan (fitur).
-4. Jelaskan harga/promo (jika ada).
-5. CTA jelas (klik link, DM, order, dll).
+Length: 6-10 sentences.
 
-Panjang: sekitar 6–10 kalimat.
-
-=========================
+===================================
 HASHTAGS INSTRUCTIONS
-=========================
+===================================
 
-Write hashtags as a single string:
-- all lowercase, separated by spaces.
-- include:
-  - umum: #umkm #umkmindonesia #jualonline #bisnisonline #produklokal #supportlocal
-  - kategori produk dari konteks (misal #skincare #kosmetik #makanan #kopi #selai).
-  - 1–3 brand/product tags dari product_name yang dinormalisasi.
-
-Target 10–20 hashtags.
+Write hashtags as a single string, all lowercase, separated by spaces.
+Target 10-20 hashtags including:
+- #umkm #umkmindonesia #jualonline #produklokal
+- Category-specific hashtags
+- Brand/product hashtags
 `;
 
 export const generateMarketingContent = async (
@@ -420,6 +372,14 @@ export const generateMarketingContent = async (
     feature_2: "${formData.feature2}"
     feature_3: "${formData.feature3}"
     seasonal_theme: "${formData.seasonalTheme}"
+    
+    IMPORTANT REMINDERS:
+    - All text on the poster MUST be in Bahasa Indonesia
+    - Title should have ELEGANT 3D effect (subtle shadow, gradient) - NOT thick chunky borders
+    - Include CTA button with Indonesian text like "Beli Sekarang" or "Pesan Sekarang"
+    - Include tagline/temptation text in Indonesian
+    - Price should be displayed as provided (e.g., "15000" → "Rp 15.000" or "15rb")
+    - Promo should be in Indonesian (e.g., "10%" → "Diskon 10%")
   `;
 
   const parts: any[] = [{ text: promptText }];
