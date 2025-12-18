@@ -110,10 +110,14 @@ TITLE DESIGN - ELEGANT 3D TYPOGRAPHY
 
 **THE TITLE IS THE MOST IMPORTANT ELEMENT.**
 
+**CRITICAL: TITLE MUST ALWAYS BE IN UPPERCASE/CAPSLOCK.**
+Example: "Juara Dimsum" → "JUARA DIMSUM"
+
 The title must be:
-1. **H1 SIZE** - The largest text, dominating the upper-center area
-2. **CENTER POSITION** - Horizontally centered in the upper third
-3. **ELEGANT 3D EFFECT** - Subtle, refined depth:
+1. **UPPERCASE/CAPSLOCK** - Always convert to capital letters
+2. **H1 SIZE** - The largest text, dominating the upper-center area
+3. **CENTER POSITION** - Horizontally centered in the upper third
+4. **ELEGANT 3D EFFECT** - Subtle, refined depth:
    - Thin drop shadow (not thick border)
    - Soft gradient fill
    - Gentle emboss effect
@@ -132,33 +136,33 @@ The title must be:
 - Slight emboss or inner shadow for depth
 - Maximum 2-3px shadow offset, soft blur
 
-**TITLE TEXT BY CONTENT TYPE (IN INDONESIAN):**
+**TITLE TEXT BY CONTENT TYPE (IN INDONESIAN - ALWAYS UPPERCASE):**
 
 a. Product Showcase / Factual:
-   - Just "[Product Name]" as main title
-   - Example: "Juara Dimsum"
+   - Just "[PRODUCT NAME]" as main title
+   - Example: "JUARA DIMSUM"
 
 b. Storytelling:
-   - "[Product Name]" with emotional subtitle below
-   - Example: "Juara Dimsum" + "Kelezatan dalam Setiap Gigitan"
+   - "[PRODUCT NAME]" with emotional subtitle below
+   - Example: "JUARA DIMSUM" + "Kelezatan dalam Setiap Gigitan"
 
 c. Testimonial:
-   - "[Product Name]" + quote style subtitle
-   - Example: "Juara Dimsum" + "Favorit Keluarga!"
+   - "[PRODUCT NAME]" + quote style subtitle
+   - Example: "JUARA DIMSUM" + "Favorit Keluarga!"
 
 d. Educational / Tips:
-   - "Tips [Topic]" format
-   - Example: "Tips Menikmati Dimsum Sempurna"
+   - "TIPS [TOPIC]" format
+   - Example: "TIPS MENIKMATI DIMSUM SEMPURNA"
 
 e. Comparison:
-   - "[Product A] vs [Product B]" or "Kenapa Pilih [Product]?"
+   - "[PRODUCT A] VS [PRODUCT B]" or "KENAPA PILIH [PRODUCT]?"
 
 f. Interactive:
-   - "Pilihan Mana Favoritmu?"
+   - "PILIHAN MANA FAVORITMU?"
 
 g. Viral / Catchy:
    - Attention-grabbing Indonesian phrases:
-   - "Wajib Coba!", "Jangan Sampai Kehabisan!", "Viral!", "Best Seller!"
+   - "WAJIB COBA!", "JANGAN SAMPAI KEHABISAN!", "VIRAL!", "BEST SELLER!"
 
 ===================================
 ALL TEXT ELEMENTS ON POSTER
@@ -194,10 +198,11 @@ The poster should include these text elements (all in Bahasa Indonesia):
 
 5. **CTA BUTTON (BOTTOM)**
    - Call-to-action in button/badge form
-   - Indonesian text: "Beli Sekarang", "Pesan Sekarang", "Order Sekarang"
+   - **CRITICAL: CTA TEXT MUST ALWAYS BE IN UPPERCASE/CAPSLOCK**
+   - Indonesian text: "BELI SEKARANG", "PESAN SEKARANG", "ORDER SEKARANG"
    - Style: Rounded rectangle or pill shape
    - Color: Contrasting, eye-catching
-   - Position: Bottom center, approximately 80-90% from top
+   - Position: Bottom center, approximately 75-85% from top
 
 6. **TAGLINE/TEMPTATION (BOTTOM)**
    - Short persuasive text below or above CTA
@@ -209,16 +214,41 @@ The poster should include these text elements (all in Bahasa Indonesia):
    - Style: Smaller text, supporting the CTA
 
 ===================================
+SPACING & LAYOUT BALANCE
+===================================
+
+**CRITICAL: BALANCED SPACING BETWEEN ELEMENTS**
+
+The poster must have COMPACT, BALANCED layout - NOT too spread out:
+
+- TITLE to PRODUCT: Small gap (5-10% of poster height)
+- PRODUCT to CTA: Small gap (5-10% of poster height)
+- All elements should feel CONNECTED, not floating separately
+
+**AVOID:**
+- Large empty spaces between elements
+- Title too close to top edge
+- CTA too close to bottom edge
+- Product image isolated in the middle with big gaps above and below
+
+**IDEAL LAYOUT:**
+- Title: 12-20% from top
+- Product: Center, occupying 35-50% of poster
+- Price/Promo badges: Close to product (within 5% gap)
+- CTA Button: 75-85% from top
+- Tagline: Directly below CTA (2-3% gap)
+
+===================================
 VISUAL LAYOUT STRUCTURE
 ===================================
 
-From TOP to BOTTOM:
+From TOP to BOTTOM (COMPACT, BALANCED layout):
 
-1. TOP ZONE (15-25% from top): MAIN TITLE - H1, Elegant 3D text
-2. UPPER-MID ZONE: Feature badges (optional) - small pill shapes
-3. CENTER ZONE (40-60% of poster): PRODUCT IMAGE - hero placement
-4. LOWER-MID ZONE: PROMO badge and PRICE display
-5. BOTTOM ZONE: CTA Button ("BELI SEKARANG") + Tagline text below
+1. TOP ZONE (12-20% from top): MAIN TITLE - H1 UPPERCASE, Elegant 3D text
+2. UPPER-MID ZONE (small gap below title): Feature badges (optional) - small pill shapes
+3. CENTER ZONE (35-50% of poster): PRODUCT IMAGE - hero placement
+4. LOWER-MID ZONE (close to product): PROMO badge and PRICE display
+5. BOTTOM ZONE (75-85% from top): CTA Button ("BELI SEKARANG" - UPPERCASE) + Tagline directly below
 
 ===================================
 NO 2D/VECTOR ORNAMENTS
@@ -357,10 +387,11 @@ export const generateMarketingContent = async (
     seasonal_theme: "${formData.seasonalTheme}"
     
     IMPORTANT REMINDERS:
+    - TITLE must be in UPPERCASE/CAPSLOCK (e.g., "Juara Dimsum" → "JUARA DIMSUM")
+    - CTA must be in UPPERCASE/CAPSLOCK (e.g., "BELI SEKARANG", "PESAN SEKARANG")
     - All text on the poster MUST be in Bahasa Indonesia
     - Title should have ELEGANT 3D effect (subtle shadow, gradient) - NOT thick chunky borders
-    - Include CTA button with Indonesian text like "Beli Sekarang" or "Pesan Sekarang"
-    - Include tagline/temptation text in Indonesian
+    - BALANCED SPACING: Keep title, product, and CTA close together - no big gaps
     - Price should be displayed as provided (e.g., "15000" → "Rp 15.000" or "15rb")
     - Promo should be in Indonesian (e.g., "10%" → "Diskon 10%")
   `;
