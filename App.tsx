@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Sparkles, Loader2, AlertCircle } from 'lucide-react';
+import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
 import { InputGroup } from './components/InputGroup';
 import { FileUpload } from './components/FileUpload';
 import { ResultCard } from './components/ResultCard';
@@ -48,35 +48,6 @@ function App() {
       setFormData((prev) => ({ ...prev, [field]: file }));
     };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Reset payment and image state when regenerating text
-    setAppState((prev) => ({
-      ...prev,
-      isGeneratingText: true,
-      error: null,
-      generatedContent: null,
-      generatedImageBase64: null,
-      hasPaid: false, // User must pay again for a new generated concept/poster
-    }));
-
-    try {
-      // Step 1: Generate Text Content & Prompts
-      const content = await generateMarketingContent(formData);
-      setAppState((prev) => ({
-        ...prev,
-        isGeneratingText: false,
-        generatedContent: content,
-      }));
-    } catch (error: any) {
-      setAppState((prev) => ({
-        ...prev,
-        isGeneratingText: false,
-        error: error.message || 'Something went wrong during generation.',
-      }));
-    }
-  };
-
   // Execute image generation with captured values
   const executeImageGeneration = async (imagePrompt: string, productImage: File | null) => {
     if (!imagePrompt) {
@@ -102,26 +73,52 @@ function App() {
     }
   };
 
-  const handlePaymentAndGenerate = async () => {
-    // Capture data dulu biar nggak ke-stale
-    const promptToUse = appState.generatedContent?.image_prompt;
-    const imageToUse = formData.productImage;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Reset payment and image state when regenerating text
+    setAppState((prev) => ({
+      ...prev,
+      isGeneratingText: true,
+      error: null,
+      generatedContent: null,
+      generatedImageBase64: null,
+      hasPaid: false,
+    }));
+
+    try {
+      // Step 1: Generate Text Content & Prompts
+      const content = await generateMarketingContent(formData);
+      setAppState((prev) => ({
+        ...prev,
+        isGeneratingText: false,
+        generatedContent: content,
+      }));
+
+      // Step 2: Auto-generate image immediately after text generation
+      const promptToUse = content.image_prompt;
+      const imageToUse = formData.productImage;
+
+      if (promptToUse) {
+        await executeImageGeneration(promptToUse, imageToUse);
+      }
+    } catch (error: any) {
+      setAppState((prev) => ({
+        ...prev,
+        isGeneratingText: false,
+        isGeneratingImage: false,
+        error: error.message || 'Something went wrong during generation.',
+      }));
+    }
+  };
+
+  const handlePaymentForDownload = async () => {
     const productName = formData.productName || 'Commercial Use License';
     const amount = 7500;
     const isDev = import.meta.env.MODE !== 'production';
 
-    if (!promptToUse) {
-      setAppState((prev) => ({
-        ...prev,
-        error: 'No image prompt found to generate. Please regenerate text first.',
-      }));
-      return;
-    }
-
-    // Kalau sudah pernah bayar untuk prompt ini, langsung generate gambar
     if (appState.hasPaid) {
-      executeImageGeneration(promptToUse, imageToUse);
-      return;
+      // Already paid, allow download
+      return true;
     }
 
     setAppState((prev) => ({ ...prev, isProcessingPayment: true, error: null }));
@@ -137,97 +134,105 @@ function App() {
       if (token === 'MOCK_TOKEN_DEMO') {
         if (isDev) {
           // 🧪 SIMULATOR HANYA UNTUK DEV (localhost / development)
-          setTimeout(() => {
-            let confirmed = false;
-            try {
-              confirmed = window.confirm(
-                `[MIDTRANS PAYMENT SIMULATOR]
+          return new Promise<boolean>((resolve) => {
+            setTimeout(() => {
+              let confirmed = false;
+              try {
+                confirmed = window.confirm(
+                  `[MIDTRANS PAYMENT SIMULATOR]
 
 Product: Commercial Use License
 Item: ${productName}
 Amount: Rp ${amount.toLocaleString('id-ID')}
 
 Click OK to simulate successful payment.`
-              );
-            } catch (e) {
-              console.error('Payment confirmation dialog failed:', e);
-            }
+                );
+              } catch (e) {
+                console.error('Payment confirmation dialog failed:', e);
+              }
 
-            if (confirmed) {
-              setAppState((prev) => ({
-                ...prev,
-                hasPaid: true,
-                isProcessingPayment: false,
-              }));
-              executeImageGeneration(promptToUse, imageToUse);
-            } else {
-              setAppState((prev) => ({ ...prev, isProcessingPayment: false }));
-            }
-          }, 50);
+              if (confirmed) {
+                setAppState((prev) => ({
+                  ...prev,
+                  hasPaid: true,
+                  isProcessingPayment: false,
+                }));
+                resolve(true);
+              } else {
+                setAppState((prev) => ({ ...prev, isProcessingPayment: false }));
+                resolve(false);
+              }
+            }, 50);
+          });
         } else {
           // ❌ Production tapi masih dapat MOCK token → konfigurasi backend/env salah
           throw new Error(
             'Payment backend is returning MOCK token in production. Please check Railway env & Midtrans configuration.'
           );
         }
-        return;
       }
 
       // 3) REAL SNAP MODE (Sandbox/Production, tapi pakai Snap beneran)
       const snap = (window as any).snap;
 
       if (snap && typeof snap.pay === 'function') {
-        snap.pay(token, {
-          onSuccess: (result: any) => {
-            console.log('Payment success', result);
-            setAppState((prev) => ({
-              ...prev,
-              hasPaid: true,
-              isProcessingPayment: false,
-            }));
-            executeImageGeneration(promptToUse, imageToUse);
-          },
-          onPending: (result: any) => {
-            console.log('Payment pending', result);
-            // biasanya kita tetap izinkan generate
-            setAppState((prev) => ({
-              ...prev,
-              hasPaid: true,
-              isProcessingPayment: false,
-            }));
-            executeImageGeneration(promptToUse, imageToUse);
-          },
-          onError: (result: any) => {
-            console.log('Payment error', result);
-            setAppState((prev) => ({
-              ...prev,
-              isProcessingPayment: false,
-              error: 'Payment failed. Please try again.',
-            }));
-          },
-          onClose: () => {
-            console.log('Snap closed by user');
-            setAppState((prev) => ({ ...prev, isProcessingPayment: false }));
-          },
+        return new Promise<boolean>((resolve) => {
+          snap.pay(token, {
+            onSuccess: (result: any) => {
+              console.log('Payment success', result);
+              setAppState((prev) => ({
+                ...prev,
+                hasPaid: true,
+                isProcessingPayment: false,
+              }));
+              resolve(true);
+            },
+            onPending: (result: any) => {
+              console.log('Payment pending', result);
+              setAppState((prev) => ({
+                ...prev,
+                hasPaid: true,
+                isProcessingPayment: false,
+              }));
+              resolve(true);
+            },
+            onError: (result: any) => {
+              console.log('Payment error', result);
+              setAppState((prev) => ({
+                ...prev,
+                isProcessingPayment: false,
+                error: 'Payment failed. Please try again.',
+              }));
+              resolve(false);
+            },
+            onClose: () => {
+              console.log('Snap closed by user');
+              setAppState((prev) => ({ ...prev, isProcessingPayment: false }));
+              resolve(false);
+            },
+          });
         });
       } else {
         if (isDev) {
           // fallback di dev kalau Snap belum ke-load
-          const ok = window.confirm(
-            `[MIDTRANS PAYMENT SIMULATOR]
+          return new Promise<boolean>((resolve) => {
+            const ok = window.confirm(
+              `[MIDTRANS PAYMENT SIMULATOR]
 
 Snap.js not loaded, simulate successful payment instead?`
-          );
-          if (ok) {
-            setAppState((prev) => ({
-              ...prev,
-              hasPaid: true,
-              isProcessingPayment: false,
-            }));
-            executeImageGeneration(promptToUse, imageToUse);
-          } else {
-            setAppState((prev) => ({ ...prev, isProcessingPayment: false }));
-          }
+            );
+            if (ok) {
+              setAppState((prev) => ({
+                ...prev,
+                hasPaid: true,
+                isProcessingPayment: false,
+              }));
+              resolve(true);
+            } else {
+              setAppState((prev) => ({ ...prev, isProcessingPayment: false }));
+              resolve(false);
+            }
+          });
         } else {
           throw new Error('Midtrans Snap is not loaded in production.');
         }
@@ -239,24 +244,27 @@ Snap.js not loaded, simulate successful payment instead?`
         isProcessingPayment: false,
         error: 'Unable to initiate payment: ' + (e.message || 'Unknown error'),
       }));
+      return false;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-indigo-600 p-2 rounded-lg">
-              <ShoppingBag className="w-5 h-5 text-white" />
-            </div>
+          <div className="flex items-center gap-3">
+            <img 
+              src="https://res.cloudinary.com/dkmadqhik/image/upload/v1766057472/logo_decrude_pcscnl.png" 
+              alt="Decrude Logo" 
+              className="h-10 w-auto"
+            />
             <div>
               <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                UMKM GenAI Studio
+                Kawan UMKM
               </h1>
               <p className="text-xs text-slate-500">
-                Holiday & Promo Poster Generator for Indonesian MSMEs
+                UMKM Poster Generator
               </p>
             </div>
           </div>
@@ -387,15 +395,16 @@ Snap.js not loaded, simulate successful payment instead?`
                     type="submit"
                     disabled={
                       appState.isGeneratingText ||
+                      appState.isGeneratingImage ||
                       !formData.productImage ||
                       !formData.productName
                     }
-                    className="w-full flex justify-center items-center px-4 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors shadow-lg shadow-indigo-200"
+                    className="w-full flex justify-center items-center px-4 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-200"
                   >
-                    {appState.isGeneratingText ? (
+                    {appState.isGeneratingText || appState.isGeneratingImage ? (
                       <>
                         <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5" />
-                        Designing Poster...
+                        {appState.isGeneratingText ? 'Designing Poster...' : 'Rendering Image...'}
                       </>
                     ) : (
                       <>
@@ -418,10 +427,14 @@ Snap.js not loaded, simulate successful payment instead?`
               </div>
             )}
 
-            {!appState.generatedContent && !appState.isGeneratingText && (
+            {!appState.generatedContent && !appState.isGeneratingText && !appState.isGeneratingImage && (
               <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 bg-white border border-dashed border-slate-300 rounded-xl text-slate-400">
-                <div className="bg-slate-50 p-4 rounded-full mb-4">
-                  <ShoppingBag className="w-8 h-8 text-slate-300" />
+                <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-full mb-4">
+                  <img 
+                    src="https://res.cloudinary.com/dkmadqhik/image/upload/v1766057472/logo_decrude_pcscnl.png" 
+                    alt="Decrude Logo" 
+                    className="w-12 h-12 opacity-50"
+                  />
                 </div>
                 <h3 className="text-lg font-medium text-slate-900 mb-1">
                   Ready to create?
@@ -433,7 +446,7 @@ Snap.js not loaded, simulate successful payment instead?`
               </div>
             )}
 
-            {(appState.generatedContent || appState.isGeneratingText) && (
+            {(appState.generatedContent || appState.isGeneratingText || appState.isGeneratingImage) && (
               <>
                 {appState.isGeneratingText ? (
                   <div className="space-y-6 animate-pulse">
@@ -446,7 +459,8 @@ Snap.js not loaded, simulate successful payment instead?`
                     <ResultCard
                       content={appState.generatedContent}
                       imageBase64={appState.generatedImageBase64}
-                      onGenerateImage={handlePaymentAndGenerate}
+                      formData={formData}
+                      onPayForDownload={handlePaymentForDownload}
                       isGeneratingImage={appState.isGeneratingImage}
                       hasPaid={appState.hasPaid}
                       isProcessingPayment={appState.isProcessingPayment}
@@ -464,6 +478,13 @@ Snap.js not loaded, simulate successful payment instead?`
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white/80 backdrop-blur-md border-t border-slate-200 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-500">
+          © 2024 Kawan UMKM by Decrude. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }
