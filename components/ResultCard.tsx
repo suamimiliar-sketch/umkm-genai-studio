@@ -1,11 +1,10 @@
 import React from 'react';
-import { Copy, Check, Download, Lock, CreditCard, Loader2 } from 'lucide-react';
-import { GeneratedContent, FormData } from '../types';
+import { Copy, Check, Download, Lock, CreditCard, Loader2, BadgeCheck } from 'lucide-react';
+import { GeneratedContent } from '../types';
 
 interface ResultCardProps {
   content: GeneratedContent;
   imageBase64: string | null;
-  formData: FormData;
   onPayForDownload: () => Promise<boolean>;
   isGeneratingImage: boolean;
   hasPaid: boolean;
@@ -13,33 +12,9 @@ interface ResultCardProps {
   onContentChange?: (content: GeneratedContent) => void;
 }
 
-// Helper function to get title based on content type
-const getTitleForContentType = (contentType: string, productName: string): { main: string; subtitle?: string } => {
-  switch (contentType) {
-    case 'showcase':
-    case 'factual':
-      return { main: productName };
-    case 'storytelling':
-      return { subtitle: 'The Story Behind', main: productName };
-    case 'testimonial':
-      return { subtitle: 'What They Say About', main: productName };
-    case 'educational':
-      return { main: `Tips ${productName}` };
-    case 'comparison':
-      return { subtitle: `${productName} vs Others:`, main: "What's the Difference?" };
-    case 'interactive':
-      return { main: 'Which Team Are You?' };
-    case 'viral':
-      return { main: 'Stop! You Have to Try This!' };
-    default:
-      return { main: productName };
-  }
-};
-
 export const ResultCard: React.FC<ResultCardProps> = ({
   content,
   imageBase64,
-  formData,
   onPayForDownload,
   isGeneratingImage,
   hasPaid,
@@ -72,7 +47,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
 
     const link = document.createElement('a');
     link.href = `data:image/png;base64,${imageBase64}`;
-    link.download = 'generated-poster.png';
+    link.download = 'poster-kawan-umkm.png';
     link.click();
   };
 
@@ -84,19 +59,17 @@ export const ResultCard: React.FC<ResultCardProps> = ({
     }
   };
 
-  const titleData = getTitleForContentType(formData.contentType, formData.productName);
-
   return (
     <div className="space-y-6 animate-fade-in">
 
-      {/* Image Section with CSS Overlay */}
+      {/* Image Section - Clean display without CSS overlays */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
         <div className="p-4 border-b border-slate-100 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-slate-800">Visual Output</h3>
             {hasPaid && (
               <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                <Check className="w-3 h-3" /> Licensed
+                <BadgeCheck className="w-3 h-3" /> Licensed
               </span>
             )}
           </div>
@@ -105,106 +78,37 @@ export const ResultCard: React.FC<ResultCardProps> = ({
         <div className="p-4 bg-gradient-to-br from-slate-100 to-slate-200 flex justify-center">
           <div className="aspect-[3/4] w-full max-w-md relative rounded-lg shadow-2xl overflow-hidden">
             {isGeneratingImage ? (
+              // Loading state
               <div className="absolute inset-0 flex items-center justify-center bg-slate-200">
                 <div className="text-center">
                   <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mx-auto mb-4" />
-                  <p className="text-slate-600 font-medium">Rendering your poster...</p>
+                  <p className="text-slate-600 font-medium">Membuat poster...</p>
+                  <p className="text-slate-400 text-sm mt-1">Tunggu sebentar ya</p>
                 </div>
               </div>
             ) : imageBase64 ? (
               <>
-                {/* Full Preview Image - No blur, no watermark */}
+                {/* Full Preview Image - No CSS overlays, image contains all text */}
                 <img 
                   src={`data:image/png;base64,${imageBase64}`} 
                   alt="Generated Poster" 
                   className="w-full h-full object-cover"
                 />
-                
-                {/* CSS Overlay for Title, Price, CTA */}
-                <div className="absolute inset-0 flex flex-col pointer-events-none">
-                  {/* Top Section - Title */}
-                  <div className="flex-shrink-0 pt-8 px-6 text-center">
-                    {titleData.subtitle && (
-                      <h3 className="text-lg font-medium text-white drop-shadow-lg mb-1" 
-                          style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
-                        {titleData.subtitle}
-                      </h3>
-                    )}
-                    <h1 className="text-3xl md:text-4xl font-extrabold text-white drop-shadow-2xl"
-                        style={{ 
-                          textShadow: '3px 3px 6px rgba(0,0,0,0.6), -1px -1px 0 rgba(0,0,0,0.3)',
-                          letterSpacing: '0.02em'
-                        }}>
-                      {titleData.main}
-                    </h1>
-                  </div>
-                  
-                  {/* Middle Section - Features (if any) */}
-                  {(formData.feature1 || formData.feature2 || formData.feature3) && (
-                    <div className="flex-grow flex items-center justify-center">
-                      <div className="flex flex-wrap justify-center gap-2 px-4">
-                        {[formData.feature1, formData.feature2, formData.feature3]
-                          .filter(Boolean)
-                          .map((feature, idx) => (
-                            <span 
-                              key={idx} 
-                              className="bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-1 rounded-full text-sm font-medium shadow-lg"
-                            >
-                              {feature}
-                            </span>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Bottom Section - Price, CTA */}
-                  <div className="flex-shrink-0 pb-6 px-6">
-                    {/* Tagline */}
-                    {formData.promoInfo && (
-                      <p className="text-center text-white text-sm mb-2 font-medium"
-                         style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>
-                        ✨ {formData.promoInfo} ✨
-                      </p>
-                    )}
-                    
-                    {/* Price Badge */}
-                    {formData.priceInfo && (
-                      <div className="flex justify-center mb-3">
-                        <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 rounded-full text-xl font-bold shadow-xl">
-                          {formData.priceInfo}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* CTA Button */}
-                    <div className="flex justify-center">
-                      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl text-lg font-bold shadow-xl transform hover:scale-105 transition-transform">
-                        🛒 Shop Now!
-                      </div>
-                    </div>
-                    
-                    {/* Temptation Text */}
-                    <p className="text-center text-white text-xs mt-2 opacity-90"
-                       style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
-                      Get it now before it runs out!
-                    </p>
-                  </div>
-                </div>
 
                 {/* Payment Overlay - Only shows if not paid */}
                 {!hasPaid && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
-                    <div className="bg-black/40 backdrop-blur-sm absolute inset-0"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-black/50 backdrop-blur-sm absolute inset-0"></div>
                     <div className="relative z-10 text-center p-6">
                       <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-xs">
                         <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                           <Lock className="w-8 h-8 text-white" />
                         </div>
                         <h4 className="text-lg font-bold text-slate-900 mb-2">
-                          Unlock Download
+                          Buka Akses Download
                         </h4>
                         <p className="text-sm text-slate-600 mb-4">
-                          Pay once to download your high-quality poster with commercial license.
+                          Bayar sekali untuk download poster berkualitas tinggi dengan lisensi komersial.
                         </p>
                         <button
                           onClick={onPayForDownload}
@@ -214,17 +118,17 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                           {isProcessingPayment ? (
                             <>
                               <Loader2 className="w-5 h-5 animate-spin" />
-                              Processing...
+                              Memproses...
                             </>
                           ) : (
                             <>
                               <CreditCard className="w-5 h-5" />
-                              Pay Rp 7.500
+                              Bayar Rp 7.500
                             </>
                           )}
                         </button>
                         <p className="text-xs text-slate-400 mt-3">
-                          Secure payment via Midtrans
+                          Pembayaran aman via Midtrans
                         </p>
                       </div>
                     </div>
@@ -232,47 +136,59 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                 )}
               </>
             ) : (
+              // Waiting for image
               <div className="absolute inset-0 flex items-center justify-center bg-slate-100">
-                <p className="text-slate-500">Waiting for image...</p>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-slate-500">Menunggu gambar...</p>
+                </div>
               </div>
             )}
           </div>
         </div>
         
-        {/* Download Button - Only enabled after payment */}
+        {/* Download Button */}
         {imageBase64 && (
           <div className="p-4 border-t border-slate-100 flex justify-center">
             <button
               onClick={downloadImage}
               disabled={isProcessingPayment}
-              className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all ${
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all ${
                 hasPaid 
                   ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' 
-                  : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300'
               }`}
             >
               {hasPaid ? (
                 <>
                   <Download className="w-5 h-5" />
-                  Download HD Poster
+                  Download Poster HD
                 </>
               ) : (
                 <>
                   <Lock className="w-4 h-4" />
-                  Pay to Download
+                  Bayar untuk Download
                 </>
               )}
             </button>
           </div>
         )}
         
-        {/* Prompt Display */}
-        <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-200 space-y-2">
-          <strong>Prompt:</strong>
-          <span className="block text-slate-600 whitespace-pre-line">
-            {editableContent.image_prompt}
-          </span>
-        </div>
+        {/* Prompt Display (collapsible) */}
+        <details className="border-t border-slate-200">
+          <summary className="p-4 bg-slate-50 text-sm text-slate-600 cursor-pointer hover:bg-slate-100">
+            <span className="font-medium">Lihat Prompt</span>
+          </summary>
+          <div className="p-4 bg-slate-50 text-xs text-slate-500 border-t border-slate-100">
+            <pre className="whitespace-pre-wrap font-mono">
+              {editableContent.image_prompt}
+            </pre>
+          </div>
+        </details>
       </div>
 
       {/* Caption Section */}
@@ -284,11 +200,12 @@ export const ResultCard: React.FC<ResultCardProps> = ({
               onClick={() => setIsEditing((prev) => !prev)}
               className="text-xs px-2 py-1 rounded-md border border-slate-200 text-slate-500 hover:bg-slate-50"
             >
-              {isEditing ? 'Done' : 'Edit Text'}
+              {isEditing ? 'Selesai' : 'Edit'}
             </button>
             <button
               onClick={() => copyToClipboard(editableContent.caption, setCopiedCaption)}
               className="text-slate-400 hover:text-indigo-600 transition-colors"
+              title="Salin caption"
             >
               {copiedCaption ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
             </button>
@@ -316,6 +233,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
           <button
             onClick={() => copyToClipboard(editableContent.hashtags, setCopiedHashtags)}
             className="text-slate-400 hover:text-indigo-600 transition-colors"
+            title="Salin hashtags"
           >
             {copiedHashtags ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
           </button>
