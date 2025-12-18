@@ -214,28 +214,11 @@ VISUAL LAYOUT STRUCTURE
 
 From TOP to BOTTOM:
 
-```
-┌────────────────────────────┐
-│     [MAIN TITLE - H1]      │  ← 15-25% from top
-│     Elegant 3D text        │
-│                            │
-│  ┌─────┐ ┌─────┐ ┌─────┐  │  ← Feature badges (optional)
-│  │Feat1│ │Feat2│ │Feat3│  │
-│  └─────┘ └─────┘ └─────┘  │
-│                            │
-│     ╔═══════════════╗      │
-│     ║   PRODUCT     ║      │  ← Product: 40-60% of poster
-│     ║    IMAGE      ║      │
-│     ╚═══════════════╝      │
-│                            │
-│   [PROMO] [PRICE]          │  ← Promo & Price badges
-│                            │
-│    ┌──────────────────┐    │
-│    │ BELI SEKARANG    │    │  ← CTA Button
-│    └──────────────────┘    │
-│   "Dapatkan sebelum habis!"│  ← Tagline
-└────────────────────────────┘
-```
+1. TOP ZONE (15-25% from top): MAIN TITLE - H1, Elegant 3D text
+2. UPPER-MID ZONE: Feature badges (optional) - small pill shapes
+3. CENTER ZONE (40-60% of poster): PRODUCT IMAGE - hero placement
+4. LOWER-MID ZONE: PROMO badge and PRICE display
+5. BOTTOM ZONE: CTA Button ("BELI SEKARANG") + Tagline text below
 
 ===================================
 NO 2D/VECTOR ORNAMENTS
