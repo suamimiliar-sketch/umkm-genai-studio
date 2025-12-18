@@ -76,15 +76,14 @@ No extra keys, no explanations, no markdown.
 CRITICAL LANGUAGE RULE
 =====================
 
-**ALL TEXT ON THE POSTER MUST BE IN BAHASA INDONESIA.**
+**ALL TEXT ON THE POSTER MUST BE IN BAHASA INDONESIA, EXCEPT CTA.**
 
-Examples:
-- "Shop Now" → "Beli Sekarang"
-- "Get it now!" → "Dapatkan Sekarang!"
+**CTA BUTTON: ENGLISH ONLY - "BUY NOW" or "SHOP NOW"**
+
+Examples for other text (Indonesian):
 - "Limited Offer" → "Penawaran Terbatas"
 - "Best Quality" → "Kualitas Terbaik"
 - "Don't miss it!" → "Jangan Sampai Kehabisan!"
-- "Order Now" → "Pesan Sekarang"
 - "Special Price" → "Harga Spesial"
 - "Flash Sale" → "Flash Sale" (can stay in English as it's commonly used)
 - "Buy 1 Get 1" → "Beli 1 Gratis 1"
@@ -198,11 +197,8 @@ The poster should include these text elements (all in Bahasa Indonesia):
 
 5. **CTA BUTTON (BOTTOM)**
    - Call-to-action in button/badge form
-   - **CRITICAL: CTA TEXT MUST ALWAYS BE IN UPPERCASE/CAPSLOCK**
-   - **USE SHORT CTA TEXT (max 2 words, max 10 characters total) to avoid typos:**
-     - Preferred: "BELI", "PESAN", "ORDER", "SHOP NOW", "BUY NOW"
-     - Acceptable: "ORDER NOW", "BELI KINI", "PESAN KINI"
-     - AVOID LONG WORDS like "SEKARANG" (8 letters - causes AI typos)
+   - **CRITICAL: CTA TEXT MUST BE IN ENGLISH AND UPPERCASE**
+   - **USE ONLY: "BUY NOW" or "SHOP NOW"** (English is more accurate for AI text rendering)
    - Style: Rounded rectangle or pill shape
    - Color: Contrasting, eye-catching
    - Position: Bottom center, approximately 75-85% from top
@@ -259,29 +255,20 @@ TEXT RENDERING GUIDELINES
 
 **AI image generation has limitations with text. Follow these rules to minimize typos:**
 
-1. **KEEP TEXT SHORT:**
-   - Title: Max 3 words, max 20 characters
-   - CTA: Max 2 words, max 10 characters
-   - Feature badges: Max 2 words each
+1. **CTA MUST BE IN ENGLISH:**
+   - Use ONLY "BUY NOW" or "SHOP NOW"
+   - English words render more accurately than Indonesian
+   - Always UPPERCASE
 
-2. **AVOID LONG INDONESIAN WORDS:**
-   - BAD: "SEKARANG" (8 letters - causes typos)
-   - GOOD: "KINI" (4 letters)
-   - BAD: "DAPATKAN" (8 letters)
-   - GOOD: "DAPAT" or "GET" (4-3 letters)
+2. **KEEP TITLE SHORT:**
+   - Max 3 words, max 20 characters
+   - Always UPPERCASE
+   - Example: "JUARA DIMSUM" not "Juara Dimsum Premium Quality"
 
-3. **PREFERRED SHORT CTA OPTIONS:**
-   - "BELI" (4 letters)
-   - "PESAN" (5 letters)
-   - "ORDER" (5 letters)
-   - "ORDER NOW" (8 letters, 2 common English words)
-   - "BUY NOW" (6 letters)
-   - "SHOP NOW" (7 letters)
-   - "BELI KINI" (8 letters)
-
-4. **FOR TITLES:**
-   - Keep product names short
-   - If product name is long, abbreviate or use key word only
+3. **OTHER TEXT IN INDONESIAN:**
+   - Tagline: Short persuasive text (e.g., "Rasakan Kelezatannya!")
+   - Features: Max 2 words each (e.g., "Halal", "Fresh")
+   - Promo: Keep simple (e.g., "Diskon 10%")
 
 ===================================
 NO 2D/VECTOR ORNAMENTS
@@ -421,9 +408,8 @@ export const generateMarketingContent = async (
     
     IMPORTANT REMINDERS:
     - TITLE must be in UPPERCASE/CAPSLOCK (e.g., "Juara Dimsum" → "JUARA DIMSUM")
-    - CTA must be in UPPERCASE/CAPSLOCK and SHORT (max 10 chars): "BELI", "PESAN", "ORDER", "ORDER NOW", "BUY NOW", "BELI KINI"
-    - AVOID long CTA words like "SEKARANG" (causes AI text rendering errors/typos)
-    - All text on the poster MUST be in Bahasa Indonesia
+    - CTA must be in ENGLISH and UPPERCASE: Use ONLY "BUY NOW" or "SHOP NOW"
+    - All OTHER text on the poster should be in Bahasa Indonesia (title, tagline, features, promo)
     - Title should have ELEGANT 3D effect (subtle shadow, gradient) - NOT thick chunky borders
     - BALANCED SPACING: Keep title, product, and CTA close together - no big gaps
     - Price should be displayed as provided (e.g., "15000" → "Rp 15.000" or "15rb")
