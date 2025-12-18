@@ -1,5 +1,5 @@
 {
-  "name": "UMKM GenAI Studio",
-  "description": "A powerful AI tool for Indonesian MSMEs (UMKM) to generate vertical marketing posters, holiday visuals, captions, and hashtags instantly.",
+  "name": "Kawan UMKM",
+  "description": "A powerful AI tool for Indonesian MSMEs (UMKM) to generate professional vertical marketing posters, holiday visuals, captions, and hashtags instantly. Powered by Gemini 2.5 Flash.",
   "requestFramePermissions": []
 }
