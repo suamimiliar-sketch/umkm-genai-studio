@@ -68,14 +68,14 @@ function App() {
       setAppState((prev) => ({
         ...prev,
         isGeneratingImage: false,
-        error: 'Failed to generate image. Please try again. ' + (error.message || ''),
+        error: 'Gagal membuat gambar. Silakan coba lagi. ' + (error.message || ''),
       }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Reset payment and image state when regenerating text
+    // Reset state when regenerating
     setAppState((prev) => ({
       ...prev,
       isGeneratingText: true,
@@ -106,46 +106,42 @@ function App() {
         ...prev,
         isGeneratingText: false,
         isGeneratingImage: false,
-        error: error.message || 'Something went wrong during generation.',
+        error: error.message || 'Terjadi kesalahan saat membuat poster.',
       }));
     }
   };
 
   const handlePaymentForDownload = async () => {
-    const productName = formData.productName || 'Commercial Use License';
+    const productName = formData.productName || 'Lisensi Komersial Poster';
     const amount = 7500;
     const isDev = import.meta.env.MODE !== 'production';
 
     if (appState.hasPaid) {
-      // Already paid, allow download
       return true;
     }
 
     setAppState((prev) => ({ ...prev, isProcessingPayment: true, error: null }));
 
     try {
-      // 1) Ambil Snap token dari backend
       const token = await getSnapToken({
         productName,
         amount,
       });
 
-      // 2) Jika token MOCK → ini mode simulasi
       if (token === 'MOCK_TOKEN_DEMO') {
         if (isDev) {
-          // 🧪 SIMULATOR HANYA UNTUK DEV (localhost / development)
           return new Promise<boolean>((resolve) => {
             setTimeout(() => {
               let confirmed = false;
               try {
                 confirmed = window.confirm(
-                  `[MIDTRANS PAYMENT SIMULATOR]
+                  `[SIMULASI PEMBAYARAN MIDTRANS]
 
-Product: Commercial Use License
+Produk: Lisensi Komersial Poster
 Item: ${productName}
-Amount: Rp ${amount.toLocaleString('id-ID')}
+Harga: Rp ${amount.toLocaleString('id-ID')}
 
-Click OK to simulate successful payment.`
+Klik OK untuk simulasi pembayaran berhasil.`
                 );
               } catch (e) {
                 console.error('Payment confirmation dialog failed:', e);
@@ -165,14 +161,12 @@ Click OK to simulate successful payment.`
             }, 50);
           });
         } else {
-          // ❌ Production tapi masih dapat MOCK token → konfigurasi backend/env salah
           throw new Error(
-            'Payment backend is returning MOCK token in production. Please check Railway env & Midtrans configuration.'
+            'Backend pembayaran mengembalikan token MOCK di production. Periksa konfigurasi Railway & Midtrans.'
           );
         }
       }
 
-      // 3) REAL SNAP MODE (Sandbox/Production, tapi pakai Snap beneran)
       const snap = (window as any).snap;
 
       if (snap && typeof snap.pay === 'function') {
@@ -201,7 +195,7 @@ Click OK to simulate successful payment.`
               setAppState((prev) => ({
                 ...prev,
                 isProcessingPayment: false,
-                error: 'Payment failed. Please try again.',
+                error: 'Pembayaran gagal. Silakan coba lagi.',
               }));
               resolve(false);
             },
@@ -214,12 +208,11 @@ Click OK to simulate successful payment.`
         });
       } else {
         if (isDev) {
-          // fallback di dev kalau Snap belum ke-load
           return new Promise<boolean>((resolve) => {
             const ok = window.confirm(
-              `[MIDTRANS PAYMENT SIMULATOR]
+              `[SIMULASI PEMBAYARAN]
 
-Snap.js not loaded, simulate successful payment instead?`
+Snap.js tidak ter-load, simulasi pembayaran berhasil?`
             );
             if (ok) {
               setAppState((prev) => ({
@@ -234,7 +227,7 @@ Snap.js not loaded, simulate successful payment instead?`
             }
           });
         } else {
-          throw new Error('Midtrans Snap is not loaded in production.');
+          throw new Error('Midtrans Snap tidak ter-load di production.');
         }
       }
     } catch (e: any) {
@@ -242,7 +235,7 @@ Snap.js not loaded, simulate successful payment instead?`
       setAppState((prev) => ({
         ...prev,
         isProcessingPayment: false,
-        error: 'Unable to initiate payment: ' + (e.message || 'Unknown error'),
+        error: 'Tidak dapat memulai pembayaran: ' + (e.message || 'Error tidak diketahui'),
       }));
       return false;
     }
@@ -264,7 +257,7 @@ Snap.js not loaded, simulate successful payment instead?`
                 Kawan UMKM
               </h1>
               <p className="text-xs text-slate-500">
-                UMKM Poster Generator
+                Generator Poster UMKM
               </p>
             </div>
           </div>
@@ -281,40 +274,40 @@ Snap.js not loaded, simulate successful payment instead?`
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="mb-6 pb-4 border-b border-slate-100">
-                <h2 className="text-lg font-semibold text-slate-800">Poster Details</h2>
+                <h2 className="text-lg font-semibold text-slate-800">Detail Poster</h2>
                 <p className="text-sm text-slate-500">
-                  Create vertical, mobile-first posters instantly.
+                  Buat poster vertikal untuk media sosial secara instan.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit}>
                 <FileUpload
-                  label="Product Image (Required)"
+                  label="Gambar Produk (Wajib)"
                   onChange={handleFileChange('productImage')}
                 />
 
                 <InputGroup
-                  label="Product Name"
+                  label="Nama Produk"
                   name="productName"
                   value={formData.productName}
                   onChange={handleInputChange}
                   required
-                  placeholder="e.g. Kopi Susu Gula Aren"
+                  placeholder="contoh: Juara Dimsum"
                 />
 
                 <InputGroup
-                  label="Description (Short)"
+                  label="Deskripsi (Singkat)"
                   name="productDescription"
                   value={formData.productDescription}
                   onChange={handleInputChange}
                   type="textarea"
                   required
-                  placeholder="e.g. Dibuat dari biji kopi arabika pilihan dan gula aren asli."
+                  placeholder="contoh: Dimsum lezat dengan isian daging ayam premium dan udang segar."
                 />
 
                 <div className="mb-4">
                   <InputGroup
-                    label="Seasonal Theme (Optional)"
+                    label="Tema Musiman (Opsional)"
                     name="seasonalTheme"
                     value={formData.seasonalTheme}
                     onChange={handleInputChange}
@@ -325,7 +318,7 @@ Snap.js not loaded, simulate successful payment instead?`
 
                 <div className="grid grid-cols-2 gap-4">
                   <InputGroup
-                    label="Display Style"
+                    label="Gaya Tampilan"
                     name="displayStyle"
                     value={formData.displayStyle}
                     onChange={handleInputChange}
@@ -334,7 +327,7 @@ Snap.js not loaded, simulate successful payment instead?`
                     required
                   />
                   <InputGroup
-                    label="Content Type"
+                    label="Tipe Konten"
                     name="contentType"
                     value={formData.contentType}
                     onChange={handleInputChange}
@@ -346,45 +339,45 @@ Snap.js not loaded, simulate successful payment instead?`
 
                 <div className="grid grid-cols-2 gap-4">
                   <InputGroup
-                    label="Price Info (Optional)"
+                    label="Harga (Opsional)"
                     name="priceInfo"
                     value={formData.priceInfo}
                     onChange={handleInputChange}
-                    placeholder="e.g. Rp15.000"
+                    placeholder="contoh: 15000"
                   />
                   <InputGroup
-                    label="Promo Info (Optional)"
+                    label="Promo (Opsional)"
                     name="promoInfo"
                     value={formData.promoInfo}
                     onChange={handleInputChange}
-                    placeholder="e.g. Diskon 20%"
+                    placeholder="contoh: 10%"
                   />
                 </div>
 
                 <div className="space-y-3 mt-4">
                   <p className="text-sm font-medium text-slate-700">
-                    Key Features (Optional)
+                    Fitur Unggulan (Opsional)
                   </p>
                   <div className="grid grid-cols-1 gap-3">
                     <input
                       name="feature1"
                       value={formData.feature1}
                       onChange={handleInputChange}
-                      placeholder="Feature 1 (e.g. Halal)"
+                      placeholder="Fitur 1 (contoh: Lezat)"
                       className="w-full rounded-lg border-slate-300 shadow-sm sm:text-sm border p-2"
                     />
                     <input
                       name="feature2"
                       value={formData.feature2}
                       onChange={handleInputChange}
-                      placeholder="Feature 2 (e.g. Tanpa Pengawet)"
+                      placeholder="Fitur 2 (contoh: Besar)"
                       className="w-full rounded-lg border-slate-300 shadow-sm sm:text-sm border p-2"
                     />
                     <input
                       name="feature3"
                       value={formData.feature3}
                       onChange={handleInputChange}
-                      placeholder="Feature 3 (e.g. Fresh Made)"
+                      placeholder="Fitur 3 (contoh: Bergizi)"
                       className="w-full rounded-lg border-slate-300 shadow-sm sm:text-sm border p-2"
                     />
                   </div>
@@ -404,12 +397,12 @@ Snap.js not loaded, simulate successful payment instead?`
                     {appState.isGeneratingText || appState.isGeneratingImage ? (
                       <>
                         <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5" />
-                        {appState.isGeneratingText ? 'Designing Poster...' : 'Rendering Image...'}
+                        {appState.isGeneratingText ? 'Menyiapkan Desain...' : 'Membuat Poster...'}
                       </>
                     ) : (
                       <>
                         <Sparkles className="mr-2 h-5 w-5" />
-                        Generate Poster
+                        Buat Poster
                       </>
                     )}
                   </button>
@@ -422,7 +415,7 @@ Snap.js not loaded, simulate successful payment instead?`
           <div className="lg:col-span-7">
             {appState.error && (
               <div className="mb-6 rounded-lg bg-red-50 p-4 border border-red-200 flex items-start">
-                <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 mr-3" />
+                <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 mr-3 flex-shrink-0" />
                 <p className="text-sm text-red-700">{appState.error}</p>
               </div>
             )}
@@ -437,11 +430,10 @@ Snap.js not loaded, simulate successful payment instead?`
                   />
                 </div>
                 <h3 className="text-lg font-medium text-slate-900 mb-1">
-                  Ready to create?
+                  Siap membuat poster?
                 </h3>
                 <p className="max-w-sm">
-                  Upload your product image and fill in the details to generate
-                  professional marketing posters instantly.
+                  Upload gambar produk dan isi detail untuk membuat poster marketing profesional secara instan.
                 </p>
               </div>
             )}
@@ -459,7 +451,6 @@ Snap.js not loaded, simulate successful payment instead?`
                     <ResultCard
                       content={appState.generatedContent}
                       imageBase64={appState.generatedImageBase64}
-                      formData={formData}
                       onPayForDownload={handlePaymentForDownload}
                       isGeneratingImage={appState.isGeneratingImage}
                       hasPaid={appState.hasPaid}
